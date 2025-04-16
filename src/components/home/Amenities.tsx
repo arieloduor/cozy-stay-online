@@ -1,6 +1,6 @@
 
 import { 
-  Wifi, Coffee, Utensils, SwimmingPool, Dumbbell, 
+  Wifi, Coffee, Utensils, Waves, Dumbbell, 
   Car, ShieldCheck, Clock
 } from 'lucide-react';
 
@@ -21,7 +21,7 @@ const amenities = [
     description: 'Enjoy fine dining at our in-house restaurant and relaxing drinks at the bar'
   },
   {
-    icon: <SwimmingPool size={40} />,
+    icon: <Waves size={40} />,
     title: 'Swimming Pool',
     description: 'Take a refreshing dip in our outdoor swimming pool'
   },
