@@ -1,39 +1,39 @@
 
 import { 
   Wifi, Coffee, Utensils, Waves, Dumbbell, 
-  Car, ShieldCheck, Clock
+  Car, ShieldCheck, Clock, Users, Bookmark, BookOpen, Tent
 } from 'lucide-react';
 
 const amenities = [
   {
     icon: <Wifi size={40} />,
     title: 'Free WiFi',
-    description: 'Stay connected with high-speed internet throughout the property'
+    description: 'Stay connected with high-speed internet throughout the hostel'
+  },
+  {
+    icon: <Users size={40} />,
+    title: 'Common Areas',
+    description: 'Meet fellow travelers in our comfortable shared spaces'
   },
   {
     icon: <Coffee size={40} />,
-    title: 'Breakfast',
-    description: 'Start your day with our delicious continental breakfast options'
+    title: 'Complimentary Breakfast',
+    description: 'Start your day with our simple yet satisfying breakfast options'
   },
   {
     icon: <Utensils size={40} />,
-    title: 'Restaurant & Bar',
-    description: 'Enjoy fine dining at our in-house restaurant and relaxing drinks at the bar'
+    title: 'Shared Kitchen',
+    description: 'Fully equipped kitchen facilities for preparing your own meals'
   },
   {
-    icon: <Waves size={40} />,
-    title: 'Swimming Pool',
-    description: 'Take a refreshing dip in our outdoor swimming pool'
+    icon: <BookOpen size={40} />,
+    title: 'Book Exchange',
+    description: 'Leave a book, take a book from our community collection'
   },
   {
-    icon: <Dumbbell size={40} />,
-    title: 'Fitness Center',
-    description: 'Keep up with your fitness routine in our well-equipped gym'
-  },
-  {
-    icon: <Car size={40} />,
-    title: 'Free Parking',
-    description: 'Complimentary parking for all our guests'
+    icon: <Tent size={40} />,
+    title: 'Outdoor Area',
+    description: 'Relax in our cozy outdoor space with fellow travelers'
   },
   {
     icon: <ShieldCheck size={40} />,
@@ -41,9 +41,9 @@ const amenities = [
     description: 'Your safety is our priority with round-the-clock security'
   },
   {
-    icon: <Clock size={40} />,
-    title: 'Room Service',
-    description: '24-hour room service for your convenience'
+    icon: <Bookmark size={40} />,
+    title: 'Tour Booking',
+    description: 'Let us help you book local tours and experiences'
   }
 ];
 
@@ -52,10 +52,10 @@ const Amenities = () => {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">Hotel Amenities</h2>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">Hostel Amenities</h2>
           <div className="w-24 h-1 bg-hotel-gold mx-auto mb-6"></div>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Enjoy our world-class facilities designed for your comfort and convenience
+            Enjoy our backpacker-friendly facilities designed for comfort and community
           </p>
         </div>
         

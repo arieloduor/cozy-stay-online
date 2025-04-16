@@ -12,10 +12,10 @@ const FeaturedRooms = () => {
     <section className="py-16 bg-hotel-light-beige">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">Featured Rooms</h2>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">Popular Accommodations</h2>
           <div className="w-24 h-1 bg-hotel-gold mx-auto mb-6"></div>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Experience the perfect blend of comfort and luxury in our carefully selected rooms
+            Find the perfect bed or room for your stay, from shared dormitories to private rooms
           </p>
         </div>
         
@@ -43,7 +43,7 @@ const FeaturedRooms = () => {
                 <p className="text-gray-600 mb-4 line-clamp-2">{room.description}</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   <Badge variant="outline" className="bg-hotel-beige/50">
-                    {room.capacity} {room.capacity === 1 ? 'Guest' : 'Guests'}
+                    {room.capacity} {room.capacity === 1 ? 'Bed' : 'Beds'}
                   </Badge>
                   <Badge variant="outline" className="bg-hotel-beige/50">
                     {room.size} m²
@@ -68,7 +68,7 @@ const FeaturedRooms = () => {
         <div className="text-center mt-10">
           <Link to="/rooms">
             <Button variant="outline" className="border-hotel-gold text-hotel-gold hover:bg-hotel-gold hover:text-white">
-              View All Rooms
+              View All Accommodations
             </Button>
           </Link>
         </div>

@@ -13,10 +13,10 @@ const CTASection = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6">
-          Ready for an Unforgettable Stay?
+          Ready for Your Next Adventure?
         </h2>
         <p className="text-xl max-w-2xl mx-auto mb-8">
-          Book your room now and enjoy exclusive online discounts and special packages.
+          Book your bed now and join our community of travelers from around the world.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <Link to="/rooms">

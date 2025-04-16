@@ -8,10 +8,10 @@ const HeroSection = () => {
     <div className="hero-section h-screen flex items-center justify-center text-center text-white">
       <div className="animate-fade-in space-y-6 px-4">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold leading-tight">
-          Experience Luxury <br /><span className="text-hotel-gold">& Comfort</span>
+          Welcome to <br /><span className="text-hotel-gold">Hussein's Haven</span>
         </h1>
         <p className="text-xl md:text-2xl max-w-3xl mx-auto">
-          Where every stay becomes an unforgettable memory
+          Where travelers become friends and adventures begin
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
           <Link to="/rooms">
