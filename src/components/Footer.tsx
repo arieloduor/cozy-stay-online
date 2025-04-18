@@ -1,5 +1,6 @@
+
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -16,7 +17,7 @@ const Footer = () => {
                 <Instagram size={20} />
               </a>
               <a href="https://wa.me/254111635658" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-hotel-gold transition-colors">
-                <WhatsApp size={20} />
+                <MessageSquare size={20} />
               </a>
             </div>
           </div>
