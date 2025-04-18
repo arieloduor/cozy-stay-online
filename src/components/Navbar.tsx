@@ -1,11 +1,14 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut, isAdmin } = useAuth();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -17,7 +20,7 @@ const Navbar = () => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-serif font-bold text-hotel-gold">ZamZam</span>
+              <span className="text-2xl font-serif font-bold text-hotel-gold">CozyStay</span>
             </Link>
           </div>
           
@@ -26,11 +29,32 @@ const Navbar = () => {
             <Link to="/rooms" className="text-foreground hover:text-hotel-gold transition-colors">Rooms</Link>
             <Link to="/about" className="text-foreground hover:text-hotel-gold transition-colors">About</Link>
             <Link to="/contact" className="text-foreground hover:text-hotel-gold transition-colors">Contact</Link>
-            <Link to="/admin">
-              <Button variant="outline" className="border-hotel-gold text-hotel-gold hover:bg-hotel-gold hover:text-white">
-                Admin Login
-              </Button>
-            </Link>
+            
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="outline" className="border-hotel-gold text-hotel-gold hover:bg-hotel-gold hover:text-white">
+                      Admin Dashboard
+                    </Button>
+                  </Link>
+                )}
+                <Button 
+                  variant="ghost" 
+                  onClick={signOut} 
+                  className="text-foreground hover:text-hotel-gold"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Link to="/auth">
+                <Button variant="outline" className="border-hotel-gold text-hotel-gold hover:bg-hotel-gold hover:text-white">
+                  Login / Register
+                </Button>
+              </Link>
+            )}
           </div>
           
           <div className="md:hidden flex items-center">
@@ -51,7 +75,23 @@ const Navbar = () => {
           <Link to="/rooms" className="block px-3 py-2 text-foreground hover:text-hotel-gold">Rooms</Link>
           <Link to="/about" className="block px-3 py-2 text-foreground hover:text-hotel-gold">About</Link>
           <Link to="/contact" className="block px-3 py-2 text-foreground hover:text-hotel-gold">Contact</Link>
-          <Link to="/admin" className="block px-3 py-2 text-hotel-gold font-medium">Admin Login</Link>
+          
+          {user ? (
+            <>
+              {isAdmin && (
+                <Link to="/admin" className="block px-3 py-2 text-hotel-gold font-medium">Admin Dashboard</Link>
+              )}
+              <button 
+                onClick={signOut}
+                className="flex items-center w-full px-3 py-2 text-foreground hover:text-hotel-gold"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link to="/auth" className="block px-3 py-2 text-hotel-gold font-medium">Login / Register</Link>
+          )}
         </div>
       </div>
     </nav>
