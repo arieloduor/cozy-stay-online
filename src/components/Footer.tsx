@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
@@ -8,19 +7,16 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-2xl font-serif font-bold text-hotel-gold mb-4">Hussein's Haven</h3>
+            <h3 className="text-2xl font-serif font-bold text-hotel-gold mb-4">ZamZam</h3>
             <p className="text-sm text-gray-300 mb-4">
               Experience community and comfort at our backpacker-friendly hostel. Perfect for budget travelers and adventurers.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-300 hover:text-hotel-gold transition-colors">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="text-gray-300 hover:text-hotel-gold transition-colors">
+              <a href="https://instagram.com/arieloduor" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-hotel-gold transition-colors">
                 <Instagram size={20} />
               </a>
-              <a href="#" className="text-gray-300 hover:text-hotel-gold transition-colors">
-                <Twitter size={20} />
+              <a href="https://wa.me/254111635658" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-hotel-gold transition-colors">
+                <WhatsApp size={20} />
               </a>
             </div>
           </div>
@@ -44,11 +40,11 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Phone size={16} className="mr-2 text-hotel-gold" />
-                <span className="text-gray-300">+1 234 567 890</span>
+                <span className="text-gray-300">+254 111 635 658</span>
               </li>
               <li className="flex items-center">
                 <Mail size={16} className="mr-2 text-hotel-gold" />
-                <span className="text-gray-300">info@husseinshaven.com</span>
+                <span className="text-gray-300">info@zamzam.com</span>
               </li>
             </ul>
           </div>
@@ -74,7 +70,7 @@ const Footer = () => {
         
         <div className="mt-8 pt-6 border-t border-gray-700">
           <p className="text-center text-gray-300 text-sm">
-            &copy; {new Date().getFullYear()} Hussein's Haven Hostel. All rights reserved.
+            &copy; {new Date().getFullYear()} ZamZam Hostel. All rights reserved.
           </p>
         </div>
       </div>

@@ -8,7 +8,7 @@ const HeroSection = () => {
     <div className="hero-section h-screen flex items-center justify-center text-center text-white">
       <div className="animate-fade-in space-y-6 px-4">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold leading-tight">
-          Welcome to <br /><span className="text-hotel-gold">Hussein's Haven</span>
+          Welcome to <br /><span className="text-hotel-gold">ZamZam</span>
         </h1>
         <p className="text-xl md:text-2xl max-w-3xl mx-auto">
           Where travelers become friends and adventures begin

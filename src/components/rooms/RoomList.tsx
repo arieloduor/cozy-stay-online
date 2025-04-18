@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +35,7 @@ const RoomList = ({ rooms }: RoomListProps) => {
             <CardContent className="p-6 flex-grow">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-xl font-serif font-semibold">{room.name}</h3>
-                <p className="text-hotel-gold font-bold">${room.price}<span className="text-sm text-gray-500">/night</span></p>
+                <p className="text-hotel-gold font-bold">KSH {room.price}<span className="text-sm text-gray-500">/night</span></p>
               </div>
               
               <p className="text-gray-600 mb-4 line-clamp-3">{room.description}</p>

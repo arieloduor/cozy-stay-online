@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
@@ -17,6 +16,7 @@ const amenityIcons: Record<string, JSX.Element> = {
   'Free WiFi': <Wifi className="h-4 w-4" />,
   'Coffee maker': <Coffee className="h-4 w-4" />,
   'Mini-bar': <Utensils className="h-4 w-4" />,
+  'CheckCircle': <CheckCircle className="h-4 w-4" />,
 };
 
 const RoomDetail = () => {
@@ -129,7 +129,7 @@ const RoomDetail = () => {
                 <div>
                   <h3 className="text-xl font-serif font-semibold mb-2">Book This Room</h3>
                   <p className="text-2xl font-bold text-hotel-gold mb-4">
-                    ${room.price} <span className="text-sm text-gray-500 font-normal">/night</span>
+                    KSH {room.price} <span className="text-sm text-gray-500 font-normal">/night</span>
                   </p>
                 </div>
                 
