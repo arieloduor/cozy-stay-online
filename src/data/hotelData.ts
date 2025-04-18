@@ -112,6 +112,34 @@ export const rooms: Room[] = [
     featured: true,
     breakfast: true,
     pets: false
+  },
+  {
+    id: 7,
+    name: "10-Bed Mixed Dorm",
+    type: "Dorm",
+    price: 2200,
+    capacity: 10,
+    description: "Our largest and most social dormitory, perfect for backpackers looking to meet fellow travelers. Features include secure lockers and individual bed lights.",
+    size: 50,
+    amenities: ["Free WiFi", "Linens Included", "Personal Lockers", "Reading Light", "Power Outlet", "Shared Bathroom", "Common Area"],
+    images: ["/hostel-large-dorm-1.jpg", "/hostel-large-dorm-2.jpg"],
+    featured: false,
+    breakfast: true,
+    pets: false
+  },
+  {
+    id: 8,
+    name: "Triple Room",
+    type: "Private",
+    price: 8500,
+    capacity: 3,
+    description: "Spacious private room with three single beds, perfect for small groups or families. Includes private bathroom and workspace.",
+    size: 30,
+    amenities: ["Free WiFi", "Linens Included", "Private Bathroom", "Workspace", "Air Conditioning", "Towels", "Daily Housekeeping"],
+    images: ["/hostel-triple-1.jpg", "/hostel-triple-2.jpg"],
+    featured: false,
+    breakfast: true,
+    pets: true
   }
 ];
 
