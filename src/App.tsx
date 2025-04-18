@@ -1,9 +1,10 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/hooks/useAuth";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth, AuthProvider } from "@/hooks/useAuth";
 
 // Pages
 import Index from "./pages/Index";
@@ -21,34 +22,76 @@ import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+// Protected route component
+const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) => {
+  const { user, isAdmin, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+  
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+  
+  if (requireAdmin && !isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Wrapper for AuthProvider to address nested router issue
+const AppWithAuth = () => (
+  <BrowserRouter>
     <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
+  </BrowserRouter>
+);
+
+// Component with routes
+const AppRoutes = () => {
+  const { user } = useAuth();
+  
+  return (
+    <>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/rooms" element={<Rooms />} />
-            <Route path="/rooms/:id" element={<RoomDetails />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/auth" element={<Auth />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="bookings" element={<BookingsPage />} />
-            </Route>
-            
-            {/* Catch-all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Index />} />
+          <Route path="/rooms" element={<Rooms />} />
+          <Route path="/rooms/:id" element={<RoomDetails />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
+          
+          {/* Admin Routes */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requireAdmin>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="bookings" element={<BookingsPage />} />
+          </Route>
+          
+          {/* Catch-all route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </TooltipProvider>
-    </AuthProvider>
+    </>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AppWithAuth />
   </QueryClientProvider>
 );
 

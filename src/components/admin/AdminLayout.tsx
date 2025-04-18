@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Hotel, CalendarDays, Users, 
-  Settings, LogOut, Menu, X, ChevronDown 
+  Settings, LogOut, Menu, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -41,15 +42,10 @@ const NavItem = ({ icon, label, href, isActive }: NavItemProps) => (
 
 const AdminLayout = () => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const isActive = (path: string) => location.pathname === path;
-  
-  const handleLogout = () => {
-    // In a real app, this would handle authentication logout logic
-    navigate('/');
-  };
   
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -96,7 +92,7 @@ const AdminLayout = () => {
         <Button 
           variant="outline" 
           className="mt-6 w-full justify-start gap-2 text-gray-600"
-          onClick={handleLogout}
+          onClick={() => signOut()}
         >
           <LogOut size={20} />
           Logout
@@ -165,7 +161,7 @@ const AdminLayout = () => {
         <Button 
           variant="outline" 
           className="mx-4 mt-6 w-[calc(100%-32px)] justify-start gap-2 text-gray-600"
-          onClick={handleLogout}
+          onClick={() => signOut()}
         >
           <LogOut size={20} />
           Logout
@@ -197,7 +193,7 @@ const AdminLayout = () => {
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                 <Avatar>
                   <AvatarImage src="/admin-avatar.jpg" />
-                  <AvatarFallback>AD</AvatarFallback>
+                  <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -207,7 +203,7 @@ const AdminLayout = () => {
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem onClick={() => signOut()}>
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
