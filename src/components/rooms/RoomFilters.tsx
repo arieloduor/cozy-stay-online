@@ -16,28 +16,33 @@ interface RoomFiltersProps {
   onFilterChange: (filters: FilterValues) => void;
 }
 
+// Update these constants for clarity & consistency
+const MIN_PRICE = 2200;
+const MAX_PRICE = 8500;
+const DEFAULT_PRICE_RANGE: [number, number] = [MIN_PRICE, MAX_PRICE];
+
 const RoomFilters = ({ onFilterChange }: RoomFiltersProps) => {
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 600]);
+  const [priceRange, setPriceRange] = useState<[number, number]>(DEFAULT_PRICE_RANGE);
   const [capacity, setCapacity] = useState<number>(1);
   const [breakfast, setBreakfast] = useState<boolean>(false);
   const [pets, setPets] = useState<boolean>(false);
-  
+
   const handlePriceChange = (value: number[]) => {
     setPriceRange([value[0], value[1]]);
   };
-  
+
   const handleCapacityChange = (value: number) => {
     setCapacity(value);
   };
-  
+
   const handleBreakfastChange = (checked: boolean) => {
     setBreakfast(checked);
   };
-  
+
   const handlePetsChange = (checked: boolean) => {
     setPets(checked);
   };
-  
+
   const handleApplyFilters = () => {
     onFilterChange({
       priceRange,
@@ -46,15 +51,15 @@ const RoomFilters = ({ onFilterChange }: RoomFiltersProps) => {
       pets
     });
   };
-  
+
   const handleResetFilters = () => {
-    setPriceRange([0, 600]);
+    setPriceRange(DEFAULT_PRICE_RANGE);
     setCapacity(1);
     setBreakfast(false);
     setPets(false);
-    
+
     onFilterChange({
-      priceRange: [0, 600],
+      priceRange: DEFAULT_PRICE_RANGE,
       capacity: 1,
       breakfast: false,
       pets: false
@@ -69,9 +74,10 @@ const RoomFilters = ({ onFilterChange }: RoomFiltersProps) => {
       <div className="mb-6">
         <h4 className="font-medium mb-2">Price Range</h4>
         <Slider 
-          defaultValue={[0, 600]} 
-          max={600} 
-          step={10} 
+          defaultValue={DEFAULT_PRICE_RANGE}
+          min={MIN_PRICE}
+          max={MAX_PRICE}
+          step={100}
           value={[priceRange[0], priceRange[1]]}
           onValueChange={handlePriceChange}
           className="mb-2"
