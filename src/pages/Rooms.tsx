@@ -1,30 +1,65 @@
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import RoomFilters, { FilterValues } from '@/components/rooms/RoomFilters';
 import RoomList from '@/components/rooms/RoomList';
-import { rooms } from '@/data/hotelData';
+import { rooms as baseRooms } from '@/data/hotelData';
+import { supabase } from '@/integrations/supabase/client';
 
 const Rooms = () => {
   const [filters, setFilters] = useState<FilterValues>({
-    priceRange: [0, 600],
+    priceRange: [2200, 8500],
     capacity: 1,
     breakfast: false,
     pets: false
   });
-  
+
+  const [bookedRoomIds, setBookedRoomIds] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch orders/booked rooms from Supabase
+    async function fetchBookedRooms() {
+      setLoading(true);
+      const now = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const { data, error } = await supabase
+        .from('orders')
+        .select('room_id, check_in_date, check_out_date, status');
+      if (data) {
+        // Find rooms that are currently booked for today and not cancelled
+        const booked = data.filter(
+          (order: any) =>
+            ['pending', 'confirmed'].includes(order.status) &&
+            order.check_in_date <= now &&
+            order.check_out_date >= now
+        ).map((order: any) => order.room_id);
+        setBookedRoomIds(booked);
+      }
+      setLoading(false);
+    }
+    fetchBookedRooms();
+  }, []);
+
   const filteredRooms = useMemo(() => {
-    return rooms.filter(room => {
-      const matchesPrice = room.price >= filters.priceRange[0] && room.price <= filters.priceRange[1];
-      const matchesCapacity = room.capacity >= filters.capacity;
-      const matchesBreakfast = !filters.breakfast || room.breakfast;
-      const matchesPets = !filters.pets || room.pets;
-      
-      return matchesPrice && matchesCapacity && matchesBreakfast && matchesPets;
-    });
-  }, [filters]);
-  
+    return baseRooms
+      .filter(room => {
+        const matchesPrice =
+          room.price >= filters.priceRange[0] && room.price <= filters.priceRange[1];
+        const matchesCapacity = room.capacity >= filters.capacity;
+        const matchesBreakfast = !filters.breakfast || room.breakfast;
+        const matchesPets = !filters.pets || room.pets;
+        const isBooked = bookedRoomIds.includes(room.id);
+        return (
+          matchesPrice &&
+          matchesCapacity &&
+          matchesBreakfast &&
+          matchesPets &&
+          !isBooked
+        );
+      });
+  }, [filters, bookedRoomIds]);
+
   const handleFilterChange = (newFilters: FilterValues) => {
     setFilters(newFilters);
   };
@@ -32,7 +67,6 @@ const Rooms = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
       <div className="bg-hotel-beige py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -44,25 +78,27 @@ const Rooms = () => {
           </div>
         </div>
       </div>
-      
       <main className="flex-grow py-12 bg-hotel-light-beige">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1">
               <RoomFilters onFilterChange={handleFilterChange} />
             </div>
-            
             <div className="lg:col-span-3">
               <h2 className="text-2xl font-serif font-semibold mb-6">
                 {filteredRooms.length} {filteredRooms.length === 1 ? 'Room' : 'Rooms'} Available
               </h2>
-              
-              <RoomList rooms={filteredRooms} />
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                <RoomList rooms={filteredRooms} />
+              )}
             </div>
           </div>
         </div>
       </main>
-      
       <Footer />
     </div>
   );

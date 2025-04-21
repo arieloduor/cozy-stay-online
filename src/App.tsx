@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +17,9 @@ import NotFound from "./pages/NotFound";
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import BookingsPage from "./pages/admin/Bookings";
+import AdminRooms from "./pages/admin/Rooms";
+import AdminGuests from "./pages/admin/Guests";
+import AdminSettings from "./pages/admin/Settings";
 import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
@@ -67,7 +69,7 @@ const AppRoutes = () => {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
-          
+
           {/* Admin Routes */}
           <Route 
             path="/admin" 
@@ -79,6 +81,9 @@ const AppRoutes = () => {
           >
             <Route index element={<AdminDashboard />} />
             <Route path="bookings" element={<BookingsPage />} />
+            <Route path="rooms" element={<AdminRooms />} />
+            <Route path="guests" element={<AdminGuests />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
           
           {/* Catch-all route */}
