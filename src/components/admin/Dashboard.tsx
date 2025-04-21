@@ -12,13 +12,16 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { rooms, bookings } from '@/data/hotelData';
 import { 
   Calendar, Hotel, CreditCard, Users, 
   BookCheck, BookX, Clock, TrendingUp, TrendingDown 
 } from 'lucide-react';
 import { BarChart, LineChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
+import { rooms } from '@/data/hotelData';
 
+// Chart data for revenue and bookings visualization
 const revenueData = [
   { name: 'Jan', value: 12500 },
   { name: 'Feb', value: 14200 },
@@ -58,12 +61,77 @@ const roomOccupancyData = [
   { name: 'Honeymoon Suite', value: 88 },
 ];
 
+interface Order {
+  id: string;
+  room_name: string;
+  user_id: string;
+  check_in_date: string;
+  check_out_date: string;
+  guests: number;
+  total_price: number;
+  status: string;
+  created_at: string;
+}
+
 const Dashboard = () => {
-  // In a real application, these would be calculated from actual data
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Calculate dashboard metrics
   const totalRooms = rooms.length;
-  const activeBookings = bookings.filter(b => b.status === 'confirmed').length;
-  const pendingBookings = bookings.filter(b => b.status === 'pending').length;
-  const totalRevenue = bookings.reduce((acc, booking) => acc + booking.totalPrice, 0);
+  const activeBookings = orders.filter(b => b.status === 'confirmed').length;
+  const pendingBookings = orders.filter(b => b.status === 'pending').length;
+  const totalGuests = orders.filter(b => b.status === 'confirmed')
+    .reduce((acc, booking) => acc + booking.guests, 0);
+  const totalRevenue = orders.reduce((acc, booking) => acc + Number(booking.total_price), 0);
+  
+  useEffect(() => {
+    // Fetch bookings from Supabase
+    async function fetchOrders() {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error("Error fetching orders:", error);
+          return;
+        }
+        
+        if (data) {
+          setOrders(data);
+        }
+      } catch (error) {
+        console.error("Exception fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchOrders();
+    
+    // Set up a subscription for real-time updates
+    const channel = supabase
+      .channel('public:orders')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'orders'
+        }, 
+        () => {
+          // Refetch orders when orders table changes
+          fetchOrders();
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   
   return (
     <div className="space-y-6">
@@ -115,7 +183,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">Total Revenue</p>
-                <h3 className="text-2xl font-bold">${totalRevenue.toLocaleString()}</h3>
+                <h3 className="text-2xl font-bold">KSH {totalRevenue.toLocaleString()}</h3>
               </div>
               <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-500">
                 <CreditCard size={24} />
@@ -148,7 +216,7 @@ const Dashboard = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                    <Tooltip formatter={(value) => [`KSH ${value}`, 'Revenue']} />
                     <Line 
                       type="monotone" 
                       dataKey="value" 
@@ -213,10 +281,13 @@ const Dashboard = () => {
             <CardDescription>Latest 5 bookings in the system</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {bookings.slice(0, 5).map((booking) => {
-                const room = rooms.find(r => r.id === booking.roomId);
-                return (
+            {loading ? (
+              <div className="text-center py-8">Loading bookings...</div>
+            ) : orders.length === 0 ? (
+              <div className="text-center py-8">No bookings found</div>
+            ) : (
+              <div className="space-y-4">
+                {orders.slice(0, 5).map((booking) => (
                   <div key={booking.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-md">
                     <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
                       booking.status === 'confirmed' ? 'bg-green-100 text-green-500' : 
@@ -228,79 +299,70 @@ const Dashboard = () => {
                        <BookX size={20} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{booking.guestName}</p>
-                      <p className="text-sm text-gray-500 truncate">{room?.name}</p>
+                      <p className="font-medium truncate">{booking.room_name}</p>
+                      <p className="text-sm text-gray-500 truncate">Guests: {booking.guests}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">${booking.totalPrice}</p>
+                      <p className="font-medium">KSH {Number(booking.total_price).toLocaleString()}</p>
                       <p className="text-sm text-gray-500">
-                        {new Date(booking.checkIn).toLocaleDateString()} - {new Date(booking.checkOut).toLocaleDateString()}
+                        {new Date(booking.check_in_date).toLocaleDateString()} - {new Date(booking.check_out_date).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader>
-            <CardTitle>Performance Overview</CardTitle>
-            <CardDescription>Quick stats compared to last month</CardDescription>
+            <CardTitle>Guest Statistics</CardTitle>
+            <CardDescription>Current guest information</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-500">
-                    <TrendingUp size={20} />
+                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
+                    <Users size={20} />
                   </div>
                   <div>
-                    <p className="font-medium">Bookings</p>
-                    <p className="text-sm text-gray-500">+12% from last month</p>
+                    <p className="font-medium">Total Guests</p>
+                    <p className="text-sm text-gray-500">Currently staying</p>
                   </div>
                 </div>
-                <p className="text-xl font-bold text-green-500">+12%</p>
+                <p className="text-xl font-bold">{totalGuests}</p>
               </div>
               
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-500">
-                    <TrendingUp size={20} />
+                    <BookCheck size={20} />
                   </div>
                   <div>
-                    <p className="font-medium">Revenue</p>
-                    <p className="text-sm text-gray-500">+8% from last month</p>
+                    <p className="font-medium">Average Stay</p>
+                    <p className="text-sm text-gray-500">In days</p>
                   </div>
                 </div>
-                <p className="text-xl font-bold text-green-500">+8%</p>
+                <p className="text-xl font-bold">3.5</p>
               </div>
               
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-500">
-                    <TrendingDown size={20} />
+                  <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-500">
+                    <CreditCard size={20} />
                   </div>
                   <div>
-                    <p className="font-medium">Cancellations</p>
-                    <p className="text-sm text-gray-500">-3% from last month</p>
+                    <p className="font-medium">Average Spend</p>
+                    <p className="text-sm text-gray-500">Per booking</p>
                   </div>
                 </div>
-                <p className="text-xl font-bold text-red-500">-3%</p>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-500">
-                    <TrendingUp size={20} />
-                  </div>
-                  <div>
-                    <p className="font-medium">Occupancy Rate</p>
-                    <p className="text-sm text-gray-500">+5% from last month</p>
-                  </div>
-                </div>
-                <p className="text-xl font-bold text-green-500">+5%</p>
+                <p className="text-xl font-bold">
+                  {orders.length > 0 
+                    ? `KSH ${Math.round(totalRevenue / orders.length).toLocaleString()}`
+                    : 'KSH 0'}
+                </p>
               </div>
             </div>
           </CardContent>
