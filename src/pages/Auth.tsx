@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Label } from "@/components/ui/label";
 
 const Auth = () => {
@@ -19,22 +19,37 @@ const Auth = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({
+      console.log("Signing up with email:", email);
+      
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: {
+            email: email
+          }
+        }
       });
+      
       if (error) throw error;
+      
+      console.log("Sign up successful:", data);
       toast({
         title: "Success!",
         description: "Your account has been created successfully.",
       });
-      // Automatically sign in after signup since email confirmation is disabled
-      await supabase.auth.signInWithPassword({
+      
+      // Automatically sign in after signup
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      if (signInError) throw signInError;
       navigate('/');
     } catch (error: any) {
+      console.error("Sign up error:", error);
       toast({
         title: "Error",
         description: error.message,
@@ -49,11 +64,16 @@ const Auth = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log("Signing in with email:", email);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
       if (error) throw error;
+      
+      console.log("Sign in successful:", data);
       navigate('/');
     } catch (error: any) {
       console.error('Sign in error:', error);

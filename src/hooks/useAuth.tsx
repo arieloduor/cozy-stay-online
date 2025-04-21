@@ -66,12 +66,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkAdminStatus = async (userId: string) => {
     try {
-      const { data } = await supabase
+      console.log("Checking admin status for user:", userId);
+      const { data, error } = await supabase
         .from('admin_users')
         .select('id')
         .eq('id', userId)
         .single();
       
+      console.log("Admin check result:", data, error);
       setIsAdmin(!!data);
     } catch (error) {
       console.error('Error checking admin status:', error);
