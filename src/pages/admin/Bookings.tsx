@@ -56,10 +56,31 @@ const BookingsPage = () => {
     }
 
     fetchOrders();
+
+    // Set up a subscription for real-time updates
+    const channel = supabase
+      .channel('public:orders')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'orders'
+        }, 
+        () => {
+          // Refetch orders when table changes
+          fetchOrders();
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user, isAdmin]);
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -73,6 +94,7 @@ const BookingsPage = () => {
         description: "Failed to fetch bookings.",
         variant: "destructive",
       });
+      console.error("Error fetching bookings:", error);
     } finally {
       setLoading(false);
     }
@@ -101,6 +123,7 @@ const BookingsPage = () => {
         description: "Failed to update booking status.",
         variant: "destructive",
       });
+      console.error("Error updating booking status:", error);
     }
   };
 
@@ -115,47 +138,53 @@ const BookingsPage = () => {
           <CardTitle>Bookings Management</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Room</TableHead>
-                <TableHead>Check In</TableHead>
-                <TableHead>Check Out</TableHead>
-                <TableHead>Guests</TableHead>
-                <TableHead>Total Price</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created At</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>{order.room_name}</TableCell>
-                  <TableCell>{new Date(order.check_in_date).toLocaleDateString()}</TableCell>
-                  <TableCell>{new Date(order.check_out_date).toLocaleDateString()}</TableCell>
-                  <TableCell>{order.guests}</TableCell>
-                  <TableCell>KSH {order.total_price}</TableCell>
-                  <TableCell>
-                    <Select
-                      value={order.status}
-                      onValueChange={(value) => updateOrderStatus(order.id, value)}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue>{order.status}</SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="confirmed">Confirmed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
+          {orders.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No bookings found.</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Room</TableHead>
+                  <TableHead>Check In</TableHead>
+                  <TableHead>Check Out</TableHead>
+                  <TableHead>Guests</TableHead>
+                  <TableHead>Total Price</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Created At</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {orders.map((order) => (
+                  <TableRow key={order.id}>
+                    <TableCell>{order.room_name}</TableCell>
+                    <TableCell>{new Date(order.check_in_date).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(order.check_out_date).toLocaleDateString()}</TableCell>
+                    <TableCell>{order.guests}</TableCell>
+                    <TableCell>KSH {order.total_price.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Select
+                        value={order.status}
+                        onValueChange={(value) => updateOrderStatus(order.id, value)}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue>{order.status}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="confirmed">Confirmed</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

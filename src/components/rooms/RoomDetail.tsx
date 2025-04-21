@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
@@ -11,6 +12,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Room, rooms } from '@/data/hotelData';
 import { Wifi, Coffee, Utensils, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 const amenityIcons: Record<string, JSX.Element> = {
   'Free WiFi': <Wifi className="h-4 w-4" />,
@@ -23,11 +26,16 @@ const RoomDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const room = rooms.find(r => r.id === Number(id));
+  const { user } = useAuth();
   
   const [checkInDate, setCheckInDate] = useState<Date | undefined>(new Date());
   const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000));
-  const [adults, setAdults] = useState<string>("2");
+  const [adults, setAdults] = useState<string>("1");
   const [children, setChildren] = useState<string>("0");
+  const [guestName, setGuestName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isBooking, setIsBooking] = useState(false);
   
   if (!room) {
     return (
@@ -43,13 +51,89 @@ const RoomDetail = () => {
     );
   }
   
-  const handleBookRoom = () => {
-    // In a real application, this would send the booking data to a server
-    toast({
-      title: "Booking Successful!",
-      description: `Your stay at ${room.name} has been booked.`,
-      variant: "default",
-    });
+  const calculateTotalPrice = () => {
+    if (!checkInDate || !checkOutDate) return room.price;
+    const days = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
+    return room.price * Math.max(1, days);
+  };
+
+  const handleBookRoom = async () => {
+    try {
+      if (!checkInDate || !checkOutDate) {
+        toast({
+          title: "Please select dates",
+          description: "Check-in and check-out dates are required",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!guestName || !email || !phone) {
+        toast({
+          title: "Missing information",
+          description: "Please fill in all contact details",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setIsBooking(true);
+      
+      // Format dates for database
+      const checkInDateString = checkInDate.toISOString().split('T')[0];
+      const checkOutDateString = checkOutDate.toISOString().split('T')[0];
+      const totalGuests = Number(adults) + Number(children);
+      const totalPrice = calculateTotalPrice();
+      
+      // Create booking in database
+      const { data, error } = await supabase
+        .from('orders')
+        .insert({
+          room_id: room.id,
+          room_name: room.name,
+          user_id: user?.id || '00000000-0000-0000-0000-000000000000', // Use guest ID if not logged in
+          check_in_date: checkInDateString,
+          check_out_date: checkOutDateString,
+          guests: totalGuests,
+          total_price: totalPrice,
+          status: 'pending',
+          payment_method: 'pay_at_hotel',
+          special_requests: ''
+        })
+        .select();
+      
+      if (error) {
+        console.error('Booking error:', error);
+        toast({
+          title: "Booking Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsBooking(false);
+        return;
+      }
+      
+      // Show success message
+      toast({
+        title: "Booking Successful!",
+        description: `Your stay at ${room.name} has been booked. Booking ID: ${data[0].id.slice(0, 8)}`,
+        variant: "default",
+      });
+      
+      // Navigate to home or booking confirmation page
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast({
+        title: "Booking Failed",
+        description: "There was an error processing your booking. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   return (
@@ -131,6 +215,12 @@ const RoomDetail = () => {
                   <p className="text-2xl font-bold text-hotel-gold mb-4">
                     KSH {room.price} <span className="text-sm text-gray-500 font-normal">/night</span>
                   </p>
+                  <p className="text-sm font-semibold text-gray-600">
+                    Total: KSH {calculateTotalPrice().toLocaleString()} 
+                    {checkInDate && checkOutDate && (
+                      <span className="font-normal"> for {Math.max(1, Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)))} night(s)</span>
+                    )}
+                  </p>
                 </div>
                 
                 {/* Check-in/out dates */}
@@ -205,15 +295,31 @@ const RoomDetail = () => {
                   <div className="space-y-4">
                     <div>
                       <Label className="text-sm" htmlFor="name">Full Name</Label>
-                      <Input id="name" placeholder="Enter your full name" />
+                      <Input 
+                        id="name" 
+                        placeholder="Enter your full name" 
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                      />
                     </div>
                     <div>
                       <Label className="text-sm" htmlFor="email">Email Address</Label>
-                      <Input id="email" type="email" placeholder="Enter your email" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="Enter your email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
                     </div>
                     <div>
                       <Label className="text-sm" htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" placeholder="Enter your phone number" />
+                      <Input 
+                        id="phone" 
+                        placeholder="Enter your phone number" 
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -222,8 +328,9 @@ const RoomDetail = () => {
                 <Button 
                   className="w-full bg-hotel-gold hover:bg-amber-600 text-white"
                   onClick={handleBookRoom}
+                  disabled={isBooking}
                 >
-                  Book Now
+                  {isBooking ? "Processing..." : "Book Now"}
                 </Button>
                 
                 <p className="text-sm text-gray-500 text-center">

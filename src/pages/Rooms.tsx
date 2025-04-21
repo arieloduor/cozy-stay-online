@@ -22,23 +22,58 @@ const Rooms = () => {
     // Fetch orders/booked rooms from Supabase
     async function fetchBookedRooms() {
       setLoading(true);
-      const now = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-      const { data, error } = await supabase
-        .from('orders')
-        .select('room_id, check_in_date, check_out_date, status');
-      if (data) {
-        // Find rooms that are currently booked for today and not cancelled
-        const booked = data.filter(
-          (order: any) =>
-            ['pending', 'confirmed'].includes(order.status) &&
-            order.check_in_date <= now &&
-            order.check_out_date >= now
-        ).map((order: any) => order.room_id);
-        setBookedRoomIds(booked);
+      try {
+        const now = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        const { data, error } = await supabase
+          .from('orders')
+          .select('room_id, check_in_date, check_out_date, status')
+          .in('status', ['pending', 'confirmed']);
+        
+        if (error) {
+          console.error("Error fetching booked rooms:", error);
+          setLoading(false);
+          return;
+        }
+        
+        if (data) {
+          // Find rooms that are currently booked for today
+          const booked = data.filter(
+            (order: any) =>
+              order.check_in_date <= now &&
+              order.check_out_date >= now
+          ).map((order: any) => order.room_id);
+          
+          console.log("Currently booked rooms:", booked);
+          setBookedRoomIds(booked);
+        }
+      } catch (err) {
+        console.error("Exception fetching booked rooms:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
+    
     fetchBookedRooms();
+    
+    // Set up a subscription for real-time updates
+    const channel = supabase
+      .channel('public:orders')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'orders'
+        }, 
+        () => {
+          // Refetch booked rooms when orders table changes
+          fetchBookedRooms();
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const filteredRooms = useMemo(() => {
@@ -90,10 +125,16 @@ const Rooms = () => {
               </h2>
               {loading ? (
                 <div className="flex items-center justify-center py-8">
-                  <span>Loading...</span>
+                  <span>Loading available rooms...</span>
                 </div>
               ) : (
                 <RoomList rooms={filteredRooms} />
+              )}
+              {filteredRooms.length === 0 && !loading && (
+                <div className="text-center py-12 bg-white rounded-lg shadow">
+                  <h3 className="text-xl font-medium text-gray-700 mb-2">No rooms available</h3>
+                  <p className="text-gray-500">Try adjusting your filters or check back later.</p>
+                </div>
               )}
             </div>
           </div>
