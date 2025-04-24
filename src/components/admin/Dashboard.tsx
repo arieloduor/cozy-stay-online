@@ -1,25 +1,15 @@
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import { 
-  Calendar, Hotel, CreditCard, Users, 
-  BookCheck, BookX, Clock, TrendingUp, TrendingDown 
-} from 'lucide-react';
-import { BarChart, LineChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
+import { Hotel, BookCheck, Clock, CreditCard } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from '@/integrations/supabase/client';
 import { rooms } from '@/data/hotelData';
+import StatsCard from './dashboard/StatsCard';
+import RevenueChart from './dashboard/RevenueChart';
+import BookingsChart from './dashboard/BookingsChart';
+import OccupancyChart from './dashboard/OccupancyChart';
+import RecentBookings from './dashboard/RecentBookings';
+import GuestStats from './dashboard/GuestStats';
 
 interface Order {
   id: string;
@@ -93,7 +83,6 @@ const Dashboard = () => {
     };
   }, []);
 
-  // Calculate monthly data based on actual orders
   const calculateMonthlyData = () => {
     const monthlyRevenue: { [key: string]: number } = {};
     const monthlyBookings: { [key: string]: number } = {};
@@ -129,7 +118,6 @@ const Dashboard = () => {
 
   const { revenueData, bookingData } = calculateMonthlyData();
 
-  // Calculate room occupancy data based on confirmed bookings
   const calculateRoomOccupancy = () => {
     const occupancyMap = new Map();
     
@@ -171,61 +159,30 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Total Rooms</p>
-                <h3 className="text-2xl font-bold">{totalRooms}</h3>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
-                <Hotel size={24} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Active Bookings</p>
-                <h3 className="text-2xl font-bold">{activeBookings}</h3>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-500">
-                <BookCheck size={24} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Pending Bookings</p>
-                <h3 className="text-2xl font-bold">{pendingBookings}</h3>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500">
-                <Clock size={24} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Total Revenue</p>
-                <h3 className="text-2xl font-bold">KSH {totalRevenue.toLocaleString()}</h3>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-500">
-                <CreditCard size={24} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <StatsCard
+          title="Total Rooms"
+          value={totalRooms}
+          icon={Hotel}
+          iconColorClass="bg-blue-100 text-blue-500"
+        />
+        <StatsCard
+          title="Active Bookings"
+          value={activeBookings}
+          icon={BookCheck}
+          iconColorClass="bg-green-100 text-green-500"
+        />
+        <StatsCard
+          title="Pending Bookings"
+          value={pendingBookings}
+          icon={Clock}
+          iconColorClass="bg-yellow-100 text-yellow-500"
+        />
+        <StatsCard
+          title="Total Revenue"
+          value={`KSH ${totalRevenue.toLocaleString()}`}
+          icon={CreditCard}
+          iconColorClass="bg-purple-100 text-purple-500"
+        />
       </div>
       
       <Tabs defaultValue="revenue">
@@ -242,166 +199,30 @@ const Dashboard = () => {
           <CardContent className="p-6">
             <TabsContent value="revenue" className="mt-0">
               <h3 className="text-lg font-medium mb-4">Monthly Revenue (2025)</h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={revenueData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`KSH ${value}`, 'Revenue']} />
-                    <Line 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="#D4AF37" 
-                      strokeWidth={2} 
-                      activeDot={{ r: 8 }} 
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <RevenueChart data={revenueData} />
             </TabsContent>
             
             <TabsContent value="bookings" className="mt-0">
               <h3 className="text-lg font-medium mb-4">Monthly Bookings (2025)</h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={bookingData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`${value}`, 'Bookings']} />
-                    <Line 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="#8B4513" 
-                      strokeWidth={2} 
-                      activeDot={{ r: 8 }} 
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <BookingsChart data={bookingData} />
             </TabsContent>
             
             <TabsContent value="occupancy" className="mt-0">
               <h3 className="text-lg font-medium mb-4">Room Occupancy Rate (%)</h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={roomOccupancyData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`${value}%`, 'Occupancy Rate']} />
-                    <Bar dataKey="value" fill="#D4AF37" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <OccupancyChart data={roomOccupancyData} />
             </TabsContent>
           </CardContent>
         </Card>
       </Tabs>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Bookings</CardTitle>
-            <CardDescription>Latest 5 bookings in the system</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">Loading bookings...</div>
-            ) : orders.length === 0 ? (
-              <div className="text-center py-8">No bookings found</div>
-            ) : (
-              <div className="space-y-4">
-                {orders.slice(0, 5).map((booking) => (
-                  <div key={booking.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-md">
-                    <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                      booking.status === 'confirmed' ? 'bg-green-100 text-green-500' : 
-                      booking.status === 'pending' ? 'bg-yellow-100 text-yellow-500' : 
-                      'bg-red-100 text-red-500'
-                    }`}>
-                      {booking.status === 'confirmed' ? <BookCheck size={20} /> : 
-                       booking.status === 'pending' ? <Clock size={20} /> : 
-                       <BookX size={20} />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{booking.room_name}</p>
-                      <p className="text-sm text-gray-500 truncate">Guests: {booking.guests}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">KSH {Number(booking.total_price).toLocaleString()}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(booking.check_in_date).toLocaleDateString()} - {new Date(booking.check_out_date).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Guest Statistics</CardTitle>
-            <CardDescription>Current guest information</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
-                    <Users size={20} />
-                  </div>
-                  <div>
-                    <p className="font-medium">Total Guests</p>
-                    <p className="text-sm text-gray-500">Currently staying</p>
-                  </div>
-                </div>
-                <p className="text-xl font-bold">{totalGuests}</p>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-500">
-                    <BookCheck size={20} />
-                  </div>
-                  <div>
-                    <p className="font-medium">Average Stay</p>
-                    <p className="text-sm text-gray-500">In days</p>
-                  </div>
-                </div>
-                <p className="text-xl font-bold">3.5</p>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-md">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-500">
-                    <CreditCard size={20} />
-                  </div>
-                  <div>
-                    <p className="font-medium">Average Spend</p>
-                    <p className="text-sm text-gray-500">Per booking</p>
-                  </div>
-                </div>
-                <p className="text-xl font-bold">
-                  {orders.length > 0 
-                    ? `KSH ${Math.round(totalRevenue / orders.length).toLocaleString()}`
-                    : 'KSH 0'}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <RecentBookings orders={orders} loading={loading} />
+        <GuestStats 
+          totalGuests={totalGuests}
+          averageStay={3.5}
+          averageSpend={orders.length > 0 ? totalRevenue / orders.length : 0}
+          totalOrders={orders.length}
+        />
       </div>
     </div>
   );
