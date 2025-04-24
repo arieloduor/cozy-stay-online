@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -147,7 +146,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">Our Location</h3>
-                      <p className="text-gray-600">123 Hotel Street, City, Country, 12345</p>
+                      <p className="text-gray-600">Nairobi, Kenya</p>
                     </div>
                   </div>
                   
@@ -157,8 +156,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">Phone Numbers</h3>
-                      <p className="text-gray-600">Reservations: +1-234-567-8900</p>
-                      <p className="text-gray-600">Reception: +1-234-567-8901</p>
+                      <p className="text-gray-600">WhatsApp/Call: +254 769 505 440</p>
                     </div>
                   </div>
                   

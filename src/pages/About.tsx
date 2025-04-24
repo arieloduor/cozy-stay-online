@@ -1,4 +1,3 @@
-
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -10,7 +9,7 @@ const About = () => {
       <div className="bg-hotel-beige py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4">About CozyStay</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-4">About ZamZam</h1>
             <div className="w-24 h-1 bg-hotel-gold mx-auto mb-6"></div>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Learn about our story, mission, and the team behind your perfect stay
@@ -26,22 +25,26 @@ const About = () => {
               <div>
                 <h2 className="text-3xl font-serif font-bold mb-6">Our Story</h2>
                 <p className="text-gray-600 mb-4">
-                  Founded in 2010, CozyStay began with a simple vision: to create a hotel experience that combines luxury with the warmth and comfort of home. Our founder, Elizabeth Harper, recognized a gap in the hospitality industry where hotels either offered luxury without comfort or comfort without elegance.
+                  Founded with a vision to provide comfortable and affordable accommodation in Nairobi, ZamZam began as a small hostel that quickly grew into a beloved destination for travelers from all corners of the world.
                 </p>
                 <p className="text-gray-600 mb-4">
-                  Starting with a single location in the heart of the city, CozyStay quickly gained a reputation for exceptional service and attention to detail. Our unique approach to hospitality attracted guests from around the world, leading to our expansion to multiple locations while maintaining our commitment to personalized service.
+                  Our commitment to exceptional hospitality and creating a welcoming environment has made us a preferred choice for both local and international guests looking for a memorable stay in Nairobi.
                 </p>
                 <p className="text-gray-600">
-                  Today, CozyStay is known for creating memorable experiences for both business and leisure travelers, with a focus on combining luxurious amenities with the warmth and comfort that makes guests feel truly at home.
+                  Today, ZamZam continues to grow while maintaining its core values of affordability, comfort, and genuine Kenyan hospitality.
                 </p>
               </div>
               <div className="rounded-lg overflow-hidden shadow-lg">
-                <img src="/about-hotel.jpg" alt="CozyStay Hotel" className="w-full h-auto" />
+                <img 
+                  src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80" 
+                  alt="ZamZam Hostel" 
+                  className="w-full h-auto"
+                />
               </div>
             </div>
           </div>
         </section>
-        
+
         <section className="py-16 bg-hotel-light-beige">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -96,45 +99,61 @@ const About = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="mb-4 rounded-full overflow-hidden w-40 h-40 mx-auto">
-                  <img src="/team-1.jpg" alt="Elizabeth Harper" className="w-full h-full object-cover" />
+                  <img 
+                    src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80" 
+                    alt="Staff Member" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h3 className="text-xl font-serif font-semibold">Elizabeth Harper</h3>
-                <p className="text-hotel-gold mb-2">Founder & CEO</p>
-                <p className="text-gray-600 text-sm">
-                  With over 20 years in luxury hospitality, Elizabeth founded CozyStay with a vision of combining comfort with elegance.
-                </p>
-              </div>
-              
-              <div className="text-center">
-                <div className="mb-4 rounded-full overflow-hidden w-40 h-40 mx-auto">
-                  <img src="/team-2.jpg" alt="Michael Chen" className="w-full h-full object-cover" />
-                </div>
-                <h3 className="text-xl font-serif font-semibold">Michael Chen</h3>
+                <h3 className="text-xl font-serif font-semibold">Sarah Kimani</h3>
                 <p className="text-hotel-gold mb-2">General Manager</p>
                 <p className="text-gray-600 text-sm">
-                  Michael ensures the smooth operation of all hotel services, bringing his expertise from managing top hotels worldwide.
+                  With over 10 years in hospitality, Sarah ensures every guest feels at home.
                 </p>
               </div>
               
               <div className="text-center">
                 <div className="mb-4 rounded-full overflow-hidden w-40 h-40 mx-auto">
-                  <img src="/team-3.jpg" alt="Sophia Rodriguez" className="w-full h-full object-cover" />
+                  <img 
+                    src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80" 
+                    alt="Staff Member" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h3 className="text-xl font-serif font-semibold">Sophia Rodriguez</h3>
-                <p className="text-hotel-gold mb-2">Head Chef</p>
+                <h3 className="text-xl font-serif font-semibold">James Omondi</h3>
+                <p className="text-hotel-gold mb-2">Guest Relations</p>
                 <p className="text-gray-600 text-sm">
-                  A renowned culinary expert, Sophia creates memorable dining experiences with her innovative approach to classic cuisine.
+                  James makes sure your stay is comfortable and memorable.
                 </p>
               </div>
               
               <div className="text-center">
                 <div className="mb-4 rounded-full overflow-hidden w-40 h-40 mx-auto">
-                  <img src="/team-4.jpg" alt="James Wilson" className="w-full h-full object-cover" />
+                  <img 
+                    src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80" 
+                    alt="Staff Member" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h3 className="text-xl font-serif font-semibold">James Wilson</h3>
-                <p className="text-hotel-gold mb-2">Customer Experience Director</p>
+                <h3 className="text-xl font-serif font-semibold">Lucy Wanjiku</h3>
+                <p className="text-hotel-gold mb-2">Housekeeping Manager</p>
                 <p className="text-gray-600 text-sm">
-                  James is dedicated to ensuring every guest has an exceptional experience, overseeing all aspects of customer service.
+                  Lucy maintains our high standards of cleanliness and comfort.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="mb-4 rounded-full overflow-hidden w-40 h-40 mx-auto">
+                  <img 
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80" 
+                    alt="Staff Member" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-xl font-serif font-semibold">David Mutua</h3>
+                <p className="text-hotel-gold mb-2">Security Manager</p>
+                <p className="text-gray-600 text-sm">
+                  David ensures the safety and security of all our guests.
                 </p>
               </div>
             </div>
