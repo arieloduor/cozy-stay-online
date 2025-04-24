@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
+import { Instagram, MessageSquare, MapPin, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -37,11 +37,11 @@ const Footer = () => {
             <ul className="space-y-2">
               <li className="flex items-center">
                 <MapPin size={16} className="mr-2 text-hotel-gold" />
-                <span className="text-gray-300">123 Backpacker Street, City, Country</span>
+                <span className="text-gray-300">Nairobi, Kenya</span>
               </li>
               <li className="flex items-center">
                 <Phone size={16} className="mr-2 text-hotel-gold" />
-                <span className="text-gray-300">+254 111 635 658</span>
+                <span className="text-gray-300">+254 769 505 440</span>
               </li>
               <li className="flex items-center">
                 <Mail size={16} className="mr-2 text-hotel-gold" />
