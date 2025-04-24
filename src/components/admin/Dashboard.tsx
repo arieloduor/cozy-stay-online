@@ -21,46 +21,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { rooms } from '@/data/hotelData';
 
-// Chart data for revenue and bookings visualization
-const revenueData = [
-  { name: 'Jan', value: 12500 },
-  { name: 'Feb', value: 14200 },
-  { name: 'Mar', value: 18400 },
-  { name: 'Apr', value: 16800 },
-  { name: 'May', value: 19500 },
-  { name: 'Jun', value: 23000 },
-  { name: 'Jul', value: 25600 },
-  { name: 'Aug', value: 26800 },
-  { name: 'Sep', value: 22400 },
-  { name: 'Oct', value: 20100 },
-  { name: 'Nov', value: 16800 },
-  { name: 'Dec', value: 19200 },
-];
-
-const bookingData = [
-  { name: 'Jan', value: 42 },
-  { name: 'Feb', value: 38 },
-  { name: 'Mar', value: 65 },
-  { name: 'Apr', value: 58 },
-  { name: 'May', value: 75 },
-  { name: 'Jun', value: 88 },
-  { name: 'Jul', value: 95 },
-  { name: 'Aug', value: 102 },
-  { name: 'Sep', value: 78 },
-  { name: 'Oct', value: 68 },
-  { name: 'Nov', value: 55 },
-  { name: 'Dec', value: 70 },
-];
-
-const roomOccupancyData = [
-  { name: 'Deluxe King Suite', value: 85 },
-  { name: 'Premium Ocean View', value: 92 },
-  { name: 'Family Suite', value: 78 },
-  { name: 'Standard Queen Room', value: 65 },
-  { name: 'Executive Business Suite', value: 72 },
-  { name: 'Honeymoon Suite', value: 88 },
-];
-
 interface Order {
   id: string;
   room_name: string;
@@ -132,6 +92,81 @@ const Dashboard = () => {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  // Calculate monthly data based on actual orders
+  const calculateMonthlyData = () => {
+    const monthlyRevenue: { [key: string]: number } = {};
+    const monthlyBookings: { [key: string]: number } = {};
+    
+    // Initialize all months with 0
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    months.forEach(month => {
+      monthlyRevenue[month] = 0;
+      monthlyBookings[month] = 0;
+    });
+
+    // Calculate actual revenue and bookings
+    orders.forEach(order => {
+      const date = new Date(order.created_at);
+      const month = months[date.getMonth()];
+      monthlyRevenue[month] += Number(order.total_price);
+      monthlyBookings[month] += 1;
+    });
+
+    // Convert to array format for charts
+    const revenueData = months.map(month => ({
+      name: month,
+      value: monthlyRevenue[month]
+    }));
+
+    const bookingData = months.map(month => ({
+      name: month,
+      value: monthlyBookings[month]
+    }));
+
+    return { revenueData, bookingData };
+  };
+
+  const { revenueData, bookingData } = calculateMonthlyData();
+
+  // Calculate room occupancy data based on confirmed bookings
+  const calculateRoomOccupancy = () => {
+    const occupancyMap = new Map();
+    
+    // Initialize occupancy for all room types
+    const roomTypes = Array.from(new Set(rooms.map(room => room.type)));
+    roomTypes.forEach(type => {
+      occupancyMap.set(type, {
+        total: rooms.filter(r => r.type === type).length,
+        booked: 0
+      });
+    });
+
+    // Count current bookings
+    const now = new Date().toISOString().slice(0, 10);
+    orders
+      .filter(order => 
+        order.status === 'confirmed' &&
+        order.check_in_date <= now &&
+        order.check_out_date >= now
+      )
+      .forEach(order => {
+        const room = rooms.find(r => r.id === order.room_id);
+        if (room) {
+          const data = occupancyMap.get(room.type);
+          data.booked += 1;
+          occupancyMap.set(room.type, data);
+        }
+      });
+
+    // Calculate percentages
+    return Array.from(occupancyMap.entries()).map(([name, data]) => ({
+      name,
+      value: Math.round((data.booked / data.total) * 100) || 0
+    }));
+  };
+
+  const roomOccupancyData = calculateRoomOccupancy();
   
   return (
     <div className="space-y-6">
