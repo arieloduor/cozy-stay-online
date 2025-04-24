@@ -21,6 +21,7 @@ interface Order {
   total_price: number;
   status: string;
   created_at: string;
+  room_id: number; // Add this missing property to fix the type error
 }
 
 const Dashboard = () => {
