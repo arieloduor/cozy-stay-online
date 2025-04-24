@@ -13,10 +13,10 @@ const Footer = () => {
               Experience community and comfort at our backpacker-friendly hostel. Perfect for budget travelers and adventurers.
             </p>
             <div className="flex space-x-4">
-              <a href="https://instagram.com/arieloduor" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-hotel-gold transition-colors">
+              <a href="https://instagram.com/mohazsalah90" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-hotel-gold transition-colors">
                 <Instagram size={20} />
               </a>
-              <a href="https://wa.me/254111635658" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-hotel-gold transition-colors">
+              <a href="https://wa.me/254769505440" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-hotel-gold transition-colors">
                 <MessageSquare size={20} />
               </a>
             </div>

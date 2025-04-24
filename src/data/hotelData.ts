@@ -1,217 +1,146 @@
 export interface Room {
   id: number;
   name: string;
-  type: string;
-  price: number;
-  capacity: number;
   description: string;
-  size: number;
-  amenities: string[];
+  price: number;
   images: string[];
-  featured: boolean;
+  capacity: number;
+  size: number;
   breakfast: boolean;
   pets: boolean;
-}
-
-export interface Booking {
-  id: number;
-  roomId: number;
-  guestName: string;
-  email: string;
-  phone: string;
-  checkIn: string;
-  checkOut: string;
-  adults: number;
-  children: number;
-  totalPrice: number;
-  status: 'confirmed' | 'pending' | 'cancelled';
-  createdAt: string;
+  featured: boolean;
+  type: string;
+  amenities: string[];
 }
 
 export const rooms: Room[] = [
   {
     id: 1,
-    name: "8-Bed Mixed Dorm",
-    type: "Dorm",
+    name: "Deluxe Dorm Bed",
+    description: "Comfortable bed in our spacious 6-bed dormitory with modern amenities and secure lockers.",
     price: 2500,
-    capacity: 8,
-    description: "Comfortable 8-bed mixed dormitory with individual lockers, reading lights, and power outlets for each bed. Shared bathroom facilities are located nearby.",
-    size: 40,
-    amenities: ["Free WiFi", "Linens Included", "Personal Lockers", "Reading Light", "Power Outlet", "Shared Bathroom", "Air Conditioning"],
-    images: ["/hostel-dorm-1.jpg", "/hostel-dorm-2.jpg", "/hostel-dorm-3.jpg", "/hostel-common-1.jpg"],
-    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1590490359683-658d3d23f972?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80"
+    ],
+    capacity: 1,
+    size: 4,
     breakfast: true,
-    pets: false
+    pets: false,
+    featured: true,
+    type: "Dormitory",
+    amenities: ["Personal Light", "Power Socket", "Locker", "AC", "Shared Bathroom", "Fresh Linens"]
   },
   {
     id: 2,
-    name: "4-Bed Female Dorm",
-    type: "Dorm",
-    price: 3200,
-    capacity: 4,
-    description: "Female-only dormitory with 4 comfortable beds, individual lockers, and a more private atmosphere. Perfect for solo female travelers looking for a safe and friendly environment.",
-    size: 30,
-    amenities: ["Female Only", "Free WiFi", "Linens Included", "Personal Lockers", "Reading Light", "Power Outlet", "Shared Bathroom", "Air Conditioning"],
-    images: ["/hostel-female-1.jpg", "/hostel-female-2.jpg", "/hostel-bathroom-1.jpg", "/hostel-locker-1.jpg"],
-    featured: true,
+    name: "Private Single Room",
+    description: "Cozy private room perfect for solo travelers seeking privacy and comfort.",
+    price: 5000,
+    images: [
+      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1631049552057-403cdb8f0658?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1631049421450-348ccd7f8949?auto=format&fit=crop&q=80"
+    ],
+    capacity: 1,
+    size: 12,
     breakfast: true,
-    pets: false
+    pets: true,
+    featured: true,
+    type: "Private Room",
+    amenities: ["Private Bathroom", "AC", "TV", "Desk", "Wardrobe", "Free WiFi"]
   },
   {
     id: 3,
-    name: "Private Twin Room",
-    type: "Private",
-    price: 6500,
+    name: "Twin Room",
+    description: "Spacious room with two single beds, perfect for friends or family members traveling together.",
+    price: 7500,
+    images: [
+      "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1595576508898-0ad5c879a061?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1595576508985-7d6d6e0d7f8f?auto=format&fit=crop&q=80"
+    ],
     capacity: 2,
-    description: "Private room with two single beds, ideal for friends or travelers who prefer more privacy. Includes a small workspace and private bathroom.",
-    size: 20,
-    amenities: ["Free WiFi", "Linens Included", "Private Bathroom", "Workspace", "Air Conditioning", "Towels", "Daily Housekeeping"],
-    images: ["/hostel-private-1.jpg", "/hostel-private-2.jpg", "/hostel-private-3.jpg"],
-    featured: true,
+    size: 18,
     breakfast: true,
-    pets: true
+    pets: true,
+    featured: true,
+    type: "Private Room",
+    amenities: ["Twin Beds", "Private Bathroom", "AC", "TV", "Mini Fridge", "Balcony"]
   },
   {
     id: 4,
-    name: "Budget Single Room",
-    type: "Private",
-    price: 4500,
-    capacity: 1,
-    description: "Cozy single room perfect for solo travelers who want privacy on a budget. Features a comfortable single bed and shared bathroom facilities.",
-    size: 12,
-    amenities: ["Free WiFi", "Linens Included", "Reading Light", "Shared Bathroom", "Air Conditioning"],
-    images: ["/hostel-single-1.jpg", "/hostel-single-2.jpg"],
-    featured: false,
-    breakfast: false,
-    pets: false
-  },
-  {
-    id: 5,
-    name: "6-Bed Mixed Dorm",
-    type: "Dorm",
-    price: 2800,
-    capacity: 6,
-    description: "Mixed dormitory with 6 beds, offering a balance between socializing and comfort. Each bed has privacy curtains, a reading light, and a power outlet.",
-    size: 35,
-    amenities: ["Free WiFi", "Linens Included", "Personal Lockers", "Privacy Curtains", "Reading Light", "Power Outlet", "Shared Bathroom"],
-    images: ["/hostel-mixed-1.jpg", "/hostel-mixed-2.jpg"],
-    featured: false,
-    breakfast: true,
-    pets: false
-  },
-  {
-    id: 6,
-    name: "Deluxe Private Double",
-    type: "Private",
-    price: 7500,
-    capacity: 2,
-    description: "Our premium private room featuring a comfortable double bed, private ensuite bathroom, and a small balcony. Perfect for couples or travelers seeking extra comfort.",
+    name: "Family Room",
+    description: "Comfortable room designed for families, featuring a double bed and two single beds.",
+    price: 12000,
+    images: [
+      "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&q=80"
+    ],
+    capacity: 4,
     size: 25,
-    amenities: ["Free WiFi", "Linens Included", "Private Bathroom", "Balcony", "Air Conditioning", "Towels", "Daily Housekeeping", "Mini Fridge"],
-    images: ["/hostel-deluxe-1.jpg", "/hostel-deluxe-2.jpg", "/hostel-deluxe-3.jpg"],
-    featured: true,
     breakfast: true,
-    pets: false
-  },
-  {
-    id: 7,
-    name: "10-Bed Mixed Dorm",
-    type: "Dorm",
-    price: 2200,
-    capacity: 10,
-    description: "Our largest and most social dormitory, perfect for backpackers looking to meet fellow travelers. Features include secure lockers and individual bed lights.",
-    size: 50,
-    amenities: ["Free WiFi", "Linens Included", "Personal Lockers", "Reading Light", "Power Outlet", "Shared Bathroom", "Common Area"],
-    images: ["/hostel-large-dorm-1.jpg", "/hostel-large-dorm-2.jpg"],
+    pets: false,
     featured: false,
-    breakfast: true,
-    pets: false
-  },
-  {
-    id: 8,
-    name: "Triple Room",
-    type: "Private",
-    price: 8500,
-    capacity: 3,
-    description: "Spacious private room with three single beds, perfect for small groups or families. Includes private bathroom and workspace.",
-    size: 30,
-    amenities: ["Free WiFi", "Linens Included", "Private Bathroom", "Workspace", "Air Conditioning", "Towels", "Daily Housekeeping"],
-    images: ["/hostel-triple-1.jpg", "/hostel-triple-2.jpg"],
-    featured: false,
-    breakfast: true,
-    pets: true
+    type: "Family Room",
+    amenities: ["Multiple Beds", "Private Bathroom", "AC", "TV", "Mini Kitchen", "Sitting Area"]
   }
 ];
 
-export const bookings: Booking[] = [
+export const amenities = [
   {
-    id: 1,
-    roomId: 1,
-    guestName: "John Smith",
-    email: "john.smith@example.com",
-    phone: "+1-555-123-4567",
-    checkIn: "2025-05-10",
-    checkOut: "2025-05-15",
-    adults: 1,
-    children: 0,
-    totalPrice: 125,
-    status: "confirmed",
-    createdAt: "2025-04-01T10:30:00Z"
+    title: "Free WiFi",
+    description: "High-speed internet access throughout the property",
+    icon: "wifi",
+    image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80"
   },
   {
-    id: 2,
-    roomId: 3,
-    guestName: "Maria Garcia",
-    email: "maria.garcia@example.com",
-    phone: "+1-555-234-5678",
-    checkIn: "2025-05-12",
-    checkOut: "2025-05-18",
-    adults: 2,
-    children: 0,
-    totalPrice: 390,
-    status: "confirmed",
-    createdAt: "2025-04-02T14:45:00Z"
+    title: "Communal Kitchen",
+    description: "Fully equipped kitchen for guest use",
+    icon: "utensils",
+    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80"
   },
   {
-    id: 3,
-    roomId: 2,
-    guestName: "Robert Johnson",
-    email: "robert.johnson@example.com",
-    phone: "+1-555-345-6789",
-    checkIn: "2025-05-15",
-    checkOut: "2025-05-20",
-    adults: 1,
-    children: 0,
-    totalPrice: 160,
-    status: "pending",
-    createdAt: "2025-04-05T09:15:00Z"
+    title: "Lounge Area",
+    description: "Comfortable space to relax and meet other travelers",
+    icon: "sofa",
+    image: "https://images.unsplash.com/photo-1630699144867-37acb899f9fb?auto=format&fit=crop&q=80"
   },
   {
-    id: 4,
-    roomId: 5,
-    guestName: "Jennifer Williams",
-    email: "jennifer.williams@example.com",
-    phone: "+1-555-456-7890",
-    checkIn: "2025-05-20",
-    checkOut: "2025-05-25",
-    adults: 1,
-    children: 0,
-    totalPrice: 140,
-    status: "confirmed",
-    createdAt: "2025-04-08T16:30:00Z"
+    title: "24/7 Security",
+    description: "Round-the-clock security and CCTV surveillance",
+    icon: "shield",
+    image: "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&q=80"
   },
   {
-    id: 5,
-    roomId: 4,
-    guestName: "Michael Brown",
-    email: "michael.brown@example.com",
-    phone: "+1-555-567-8901",
-    checkIn: "2025-05-22",
-    checkOut: "2025-05-24",
-    adults: 1,
-    children: 0,
-    totalPrice: 90,
-    status: "cancelled",
-    createdAt: "2025-04-10T11:00:00Z"
+    title: "Laundry Service",
+    description: "Washing and drying facilities available",
+    icon: "washing-machine",
+    image: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&q=80"
+  },
+  {
+    title: "Tour Desk",
+    description: "Help with booking tours and travel arrangements",
+    icon: "map",
+    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80"
+  }
+];
+
+export const testimonials = [
+  {
+    name: "Alice Johnson",
+    text: "I had an amazing stay at ZamZam! The staff was incredibly friendly and helpful, and the facilities were top-notch. I especially loved the communal kitchen, where I met travelers from all over the world. Highly recommended!",
+    rating: 5
+  },
+  {
+    name: "Bob Williams",
+    text: "ZamZam is the perfect place for budget travelers. The dorms are clean and comfortable, and the location is ideal for exploring the city. I also appreciated the 24/7 security, which made me feel safe and secure.",
+    rating: 4
+  },
+  {
+    name: "Charlie Brown",
+    text: "I stayed in a private room at ZamZam and it was fantastic. The room was spacious and well-equipped, and the breakfast was delicious. I would definitely stay here again.",
+    rating: 5
   }
 ];
