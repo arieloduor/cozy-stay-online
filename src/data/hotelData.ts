@@ -1,3 +1,4 @@
+
 export interface Room {
   id: number;
   name: string;
@@ -534,3 +535,24 @@ export const rooms: Room[] = [
     pets: false,
     featured: true,
     type: "Suite",
+    amenities: ["Ocean View", "King Bed", "Private Balcony", "Luxury Bathroom", "Room Service", "Seating Area"]
+  },
+  {
+    id: 30,
+    name: "Deluxe Mountain View Room",
+    description: "Elegant room with stunning mountain views and premium amenities.",
+    price: 12500,
+    images: [
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80"
+    ],
+    capacity: 2,
+    size: 38,
+    breakfast: true,
+    pets: false,
+    featured: false,
+    type: "Deluxe",
+    amenities: ["Mountain View", "Queen Bed", "Work Desk", "Premium Toiletries", "Mini Bar", "Coffee Machine"]
+  }
+];
