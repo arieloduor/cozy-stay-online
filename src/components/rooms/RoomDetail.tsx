@@ -14,6 +14,7 @@ import { Wifi, Coffee, Utensils, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { validateEmail } from '@/utils/emailValidation';
 
 const amenityIcons: Record<string, JSX.Element> = {
   'Free WiFi': <Wifi className="h-4 w-4" />,
@@ -35,6 +36,22 @@ const RoomDetail = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [isBooking, setIsBooking] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    
+    // Clear error when user starts typing
+    if (emailError) {
+      setEmailError(null);
+    }
+  };
+
+  const handleEmailBlur = () => {
+    const error = validateEmail(email);
+    setEmailError(error);
+  };
   
   if (!room) {
     return (
@@ -73,6 +90,13 @@ const RoomDetail = () => {
           description: "Please fill in all contact details",
           variant: "destructive",
         });
+        return;
+      }
+
+      // Validate email before booking
+      const emailValidationError = validateEmail(email);
+      if (emailValidationError) {
+        setEmailError(emailValidationError);
         return;
       }
       
@@ -223,27 +247,29 @@ const RoomDetail = () => {
                 </div>
                 
                 {/* Check-in/out dates */}
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <Label>Select Dates</Label>
-                  <div className="border rounded-md p-4">
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <Label className="text-sm">Check-in</Label>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <Label className="text-sm mb-2 block">Check-in</Label>
+                      <div className="border rounded-md">
                         <Calendar
                           mode="single"
                           selected={checkInDate}
                           onSelect={setCheckInDate}
-                          className="rounded border p-2"
+                          className="p-3"
                           disabled={(date) => date < new Date()}
                         />
                       </div>
-                      <div>
-                        <Label className="text-sm">Check-out</Label>
+                    </div>
+                    <div>
+                      <Label className="text-sm mb-2 block">Check-out</Label>
+                      <div className="border rounded-md">
                         <Calendar
                           mode="single"
                           selected={checkOutDate}
                           onSelect={setCheckOutDate}
-                          className="rounded border p-2"
+                          className="p-3"
                           disabled={(date) => date <= (checkInDate || new Date())}
                         />
                       </div>
@@ -251,7 +277,7 @@ const RoomDetail = () => {
                   </div>
                 </div>
                 
-                {/* Guests - removed children option */}
+                {/* Guests */}
                 <div className="space-y-2">
                   <Label>Number of Adults</Label>
                   <Select value={adults} onValueChange={setAdults}>
@@ -288,8 +314,13 @@ const RoomDetail = () => {
                         type="email" 
                         placeholder="Enter your email" 
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={handleEmailChange}
+                        onBlur={handleEmailBlur}
+                        className={emailError ? "border-red-500" : ""}
                       />
+                      {emailError && (
+                        <p className="text-sm text-red-500 mt-1">{emailError}</p>
+                      )}
                     </div>
                     <div>
                       <Label className="text-sm" htmlFor="phone">Phone Number</Label>
@@ -307,7 +338,7 @@ const RoomDetail = () => {
                 <Button 
                   className="w-full bg-hotel-gold hover:bg-amber-600 text-white"
                   onClick={handleBookRoom}
-                  disabled={isBooking}
+                  disabled={isBooking || !!emailError}
                 >
                   {isBooking ? "Processing..." : "Book Now"}
                 </Button>

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { validateEmail } from '@/utils/emailValidation';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +19,7 @@ const Contact = () => {
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -24,10 +27,28 @@ const Contact = () => {
       ...prev,
       [name]: value
     }));
+
+    // Clear email error when user starts typing
+    if (name === 'email' && emailError) {
+      setEmailError(null);
+    }
+  };
+
+  const handleEmailBlur = () => {
+    const error = validateEmail(formData.email);
+    setEmailError(error);
   };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate email before submission
+    const emailValidationError = validateEmail(formData.email);
+    if (emailValidationError) {
+      setEmailError(emailValidationError);
+      return;
+    }
+
     setIsSubmitting(true);
     
     // Simulate API call
@@ -44,6 +65,7 @@ const Contact = () => {
         message: ''
       });
       
+      setEmailError(null);
       setIsSubmitting(false);
     }, 1000);
   };
@@ -90,11 +112,15 @@ const Contact = () => {
                       name="email" 
                       type="email" 
                       value={formData.email} 
-                      onChange={handleChange} 
+                      onChange={handleChange}
+                      onBlur={handleEmailBlur}
                       placeholder="Enter your email" 
                       required 
-                      className="border-gray-300 focus:border-hotel-gold focus:ring-hotel-gold"
+                      className={`border-gray-300 focus:border-hotel-gold focus:ring-hotel-gold ${emailError ? 'border-red-500' : ''}`}
                     />
+                    {emailError && (
+                      <p className="text-sm text-red-500">{emailError}</p>
+                    )}
                   </div>
                 </div>
                 
@@ -128,7 +154,7 @@ const Contact = () => {
                 <Button 
                   type="submit" 
                   className="w-full bg-hotel-gold hover:bg-amber-600 text-white"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !!emailError}
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
