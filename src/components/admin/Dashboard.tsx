@@ -21,15 +21,17 @@ interface Order {
   total_price: number;
   status: string;
   created_at: string;
-  room_id: number; // Add this missing property to fix the type error
+  room_id: number;
 }
 
 const Dashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [bookedRoomIds, setBookedRoomIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Calculate dashboard metrics
   const totalRooms = rooms.length;
+  const availableRooms = totalRooms - bookedRoomIds.length; // Available rooms count
   const activeBookings = orders.filter(b => b.status === 'confirmed').length;
   const pendingBookings = orders.filter(b => b.status === 'pending').length;
   const totalGuests = orders.filter(b => b.status === 'confirmed')
@@ -60,8 +62,39 @@ const Dashboard = () => {
         setLoading(false);
       }
     }
+
+    // Fetch currently booked rooms
+    async function fetchBookedRooms() {
+      try {
+        const now = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        const { data, error } = await supabase
+          .from('orders')
+          .select('room_id, check_in_date, check_out_date, status')
+          .in('status', ['pending', 'confirmed']);
+        
+        if (error) {
+          console.error("Error fetching booked rooms:", error);
+          return;
+        }
+        
+        if (data) {
+          // Find rooms that are currently booked for today
+          const booked = data.filter(
+            (order: any) =>
+              order.check_in_date <= now &&
+              order.check_out_date >= now
+          ).map((order: any) => order.room_id);
+          
+          console.log("Currently booked rooms:", booked);
+          setBookedRoomIds(booked);
+        }
+      } catch (err) {
+        console.error("Exception fetching booked rooms:", err);
+      }
+    }
     
     fetchOrders();
+    fetchBookedRooms();
     
     // Set up a subscription for real-time updates
     const channel = supabase
@@ -73,8 +106,9 @@ const Dashboard = () => {
           table: 'orders'
         }, 
         () => {
-          // Refetch orders when orders table changes
+          // Refetch orders and booked rooms when orders table changes
           fetchOrders();
+          fetchBookedRooms();
         }
       )
       .subscribe();
@@ -161,8 +195,8 @@ const Dashboard = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
-          title="Total Rooms"
-          value={totalRooms}
+          title="Available Rooms"
+          value={availableRooms}
           icon={Hotel}
           iconColorClass="bg-blue-100 text-blue-500"
         />
