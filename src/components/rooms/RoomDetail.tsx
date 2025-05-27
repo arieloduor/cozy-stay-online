@@ -31,7 +31,6 @@ const RoomDetail = () => {
   const [checkInDate, setCheckInDate] = useState<Date | undefined>(new Date());
   const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000));
   const [adults, setAdults] = useState<string>("1");
-  const [children, setChildren] = useState<string>("0");
   const [guestName, setGuestName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -82,7 +81,7 @@ const RoomDetail = () => {
       // Format dates for database
       const checkInDateString = checkInDate.toISOString().split('T')[0];
       const checkOutDateString = checkOutDate.toISOString().split('T')[0];
-      const totalGuests = Number(adults) + Number(children);
+      const totalGuests = Number(adults);
       const totalPrice = calculateTotalPrice();
       
       // Create booking in database
@@ -252,41 +251,21 @@ const RoomDetail = () => {
                   </div>
                 </div>
                 
-                {/* Guests */}
+                {/* Guests - removed children option */}
                 <div className="space-y-2">
-                  <Label>Guests</Label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm" htmlFor="adults">Adults</Label>
-                      <Select value={adults} onValueChange={setAdults}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Adults" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[...Array(room.capacity)].map((_, i) => (
-                            <SelectItem key={i} value={(i + 1).toString()}>
-                              {i + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label className="text-sm" htmlFor="children">Children</Label>
-                      <Select value={children} onValueChange={setChildren}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Children" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[...Array(room.capacity)].map((_, i) => (
-                            <SelectItem key={i} value={i.toString()}>
-                              {i}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+                  <Label>Number of Adults</Label>
+                  <Select value={adults} onValueChange={setAdults}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select number of adults" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[...Array(room.capacity)].map((_, i) => (
+                        <SelectItem key={i} value={(i + 1).toString()}>
+                          {i + 1} {i === 0 ? 'Adult' : 'Adults'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 {/* Contact Info */}
